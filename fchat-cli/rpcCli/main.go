@@ -4,7 +4,8 @@ import (
 	"log"
 	"os"
 
-	pb "fchat/pbgos"
+	pb "fchat/protos2Go/rpc"
+
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )

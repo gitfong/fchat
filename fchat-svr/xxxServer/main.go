@@ -4,9 +4,10 @@ import (
 	_ "fmt"
 	"log"
 	"net"
-	_"time"
+	_ "time"
 
-	pb "fchat/pbgos"
+	pb "fchat/protos2Go/rpc"
+
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
