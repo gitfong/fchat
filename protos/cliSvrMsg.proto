@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package cliSvrMsg;
+
+enum MsgID{
+	begin = 0;
+	//账号状态管理相关协议id 1~1000
+	registerReq = 1;
+	registerRsp = 2;
+	loginReq = 5;
+	loginRsp = 6;
+
+	//聊天相关id 10001~2000
+}
+
+message Msg{
+	MsgID	ID = 1;
+	MsgRegisterReq	registerReq = 2;
+	MsgRegisterRsp	registerRsp = 3;
+	MsgLoginReq	loginReq = 4;
+	MsgLoginRsp	loginRsp = 5;
+}
+
+
+message MsgRegisterReq{
+	string	account = 1;
+	string	password = 2;
+}
+
+message MsgRegisterRsp{
+	int32	retCode = 1;
+	string	desc = 2;	
+}
+
+message MsgLoginReq{
+	string	account = 1;
+	string	password = 2;
+}
+
+message MsgLoginRsp{
+	int32	retCode = 1;
+	string	desc = 2;
+}
