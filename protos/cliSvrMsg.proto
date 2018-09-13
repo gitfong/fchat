@@ -9,6 +9,8 @@ enum MsgID{
 	registerRsp = 2;
 	loginReq = 5;
 	loginRsp = 6;
+	signInReq = 7;
+	signInRsp = 8;
 
 	//聊天相关id 10001~2000
 }
@@ -40,4 +42,13 @@ message MsgLoginReq{
 message MsgLoginRsp{
 	int32	retCode = 1;
 	string	desc = 2;
+}
+
+message MsgSignInReq{
+}
+
+message MsgSignInRsp{
+	int32	retcode = 1;
+	string	desc = 2;
+	int32	signInCount = 3;
 }
