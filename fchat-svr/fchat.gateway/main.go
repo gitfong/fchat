@@ -20,7 +20,7 @@ func init() {
 }
 
 func main() {
-	fmt.Println("Launching server...")
+	fmt.Println("Launching server")
 
 	listenAdd := ":9090"
 	tcpAddr, err := net.ResolveTCPAddr("tcp", listenAdd)
