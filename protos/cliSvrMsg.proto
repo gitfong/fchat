@@ -21,6 +21,8 @@ message Msg{
 	MsgRegisterRsp	registerRsp = 3;
 	MsgLoginReq	loginReq = 4;
 	MsgLoginRsp	loginRsp = 5;
+	MsgSignInReq signInReq = 6;
+	MsgSignInRsp signInRsp = 7;
 }
 
 
