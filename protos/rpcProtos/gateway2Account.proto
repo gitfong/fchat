@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package rpcProtos;
+
+service Account {
+	rpc Register(RegisterReq) returns (RegisterRsp) {}
+	rpc Login(LoginReq) returns (LoginRsp) {}
+}
+
+message RegisterReq{
+	string account=1;
+	string password=2;
+}
+message RegisterRsp{
+	int32 retCode=1;	//0成功；其他失败；
+	int32 uid=2;
+	//string account=3;
+}
+
+message LoginReq{
+	string account=1;
+	string password=2;
+}
+message LoginRsp{
+	int32 retCode=1;	//0成功；其他失败；
+	int32 uid=2;
+}
