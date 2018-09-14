@@ -15,14 +15,14 @@ import (
 func init() {
 }
 
-const 
+const (
 	accountSvrAddr = ":9091"
 )
 
 type accountServer struct{}
 
 func (s *accountServer) Heartbeat(ctx context.Context, in *rpcPb.HeartbeatReq)(*rpcPb.HeartbeatRsp, error) {
-	return &rpcPb.HeartbeatRsp{}
+	return &rpcPb.HeartbeatRsp{},nil
 }
 
 func (s *accountServer) Register(ctx context.Context, in *rpcPb.RegisterReq) (*rpcPb.RegisterRsp, error) {

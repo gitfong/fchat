@@ -49,8 +49,9 @@ func handleLoginReq(addr string, msg *csMsg.Msg, cm *connsManager) {
 
 	rspMsg := new(csMsg.Msg)
 	rspMsg.ID = csMsg.MsgID_loginRsp
-	rspMsg.GetRegisterRsp().RetCode = rsp.RetCode
-	rspMsg.GetRegisterRsp().Desc = rsp.Desc
+	rspMsg.LoginRsp = new(csMsg.MsgLoginRsp)
+	rspMsg.GetLoginRsp().RetCode = rsp.RetCode
+	rspMsg.GetLoginRsp().Desc = rsp.Desc
 
 	rData := new(rspData)
 	rData.setData(addr, addr, rspMsg)
@@ -84,6 +85,7 @@ func handleRegisterReq(addr string, msg *csMsg.Msg, cm *connsManager) {
 
 	rspMsg := new(csMsg.Msg)
 	rspMsg.ID = csMsg.MsgID_registerRsp
+	rspMsg.RegisterRsp = new(csMsg.MsgRegisterRsp)
 	rspMsg.GetRegisterRsp().RetCode = rsp.RetCode
 	rspMsg.GetRegisterRsp().Desc = rsp.Desc
 
