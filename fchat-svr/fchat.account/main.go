@@ -15,11 +15,15 @@ import (
 func init() {
 }
 
-const (
+const 
 	accountSvrAddr = ":9091"
 )
 
 type accountServer struct{}
+
+func (s *accountServer) Heartbeat(ctx context.Context, in *rpcPb.HeartbeatReq)(*rpcPb.HeartbeatRsp, error) {
+	return &rpcPb.HeartbeatRsp{}
+}
 
 func (s *accountServer) Register(ctx context.Context, in *rpcPb.RegisterReq) (*rpcPb.RegisterRsp, error) {
 	//time.Sleep(time.Second * 10)	//客户端会阻塞等待

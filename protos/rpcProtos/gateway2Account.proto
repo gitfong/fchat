@@ -3,9 +3,13 @@ syntax = "proto3";
 package rpcProtos;
 
 service Account {
+	rpc Heartbeat(HeartbeatReq) returns (HeartbeatRsp){}
 	rpc Register(RegisterReq) returns (RegisterRsp) {}
 	rpc Login(LoginReq) returns (LoginRsp) {}
 }
+
+message HeartbeatReq{}
+message HeartbeatRsp{}
 
 message RegisterReq{
 	string account=1;
