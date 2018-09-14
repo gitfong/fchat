@@ -14,7 +14,7 @@ message RegisterReq{
 message RegisterRsp{
 	int32 retCode=1;	//0成功；其他失败；
 	int32 uid=2;
-	//string account=3;
+	string desc=3;
 }
 
 message LoginReq{
@@ -24,4 +24,5 @@ message LoginReq{
 message LoginRsp{
 	int32 retCode=1;	//0成功；其他失败；
 	int32 uid=2;
+	string desc=3;
 }
