@@ -13,11 +13,12 @@ import (
 	"fLog"
 )
 
-var flog = fLog.New()
+var flog *fLog.FLogger
 
 func init() {
 	numCpu := runtime.NumCPU()
 	runtime.GOMAXPROCS(numCpu)
+	flog = fLog.New()
 }
 
 func main() {
