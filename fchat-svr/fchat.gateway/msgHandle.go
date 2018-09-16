@@ -4,9 +4,7 @@ import (
 	"context"
 	csMsg "fchat/protos2Go"
 	rpcPb "fchat/protos2Go/rpc"
-	"fmt"
 	_ "time"
-	//"golang.org/x/net/context"
 )
 
 //以下函数全是在gatewaySvr运行的，所以尽量不要有太复杂的逻辑，把复杂的逻辑都传给其他服去处理
@@ -19,19 +17,19 @@ var MsgHandleFunc = map[csMsg.MsgID]func(string, *csMsg.Msg, *connsManager){
 }
 
 func handleSignInReq(addr string, msg *csMsg.Msg, cm *connsManager) {
-	fmt.Printf("handleSignInReq msg=%v\n", msg)
+	flog.Debug("handleSignInReq msg=%v", msg)
 }
 
 func handleLoginRsp(addr string, msg *csMsg.Msg, cm *connsManager) {
-	fmt.Printf("handleLoginRsp msg=%v\n", *msg)
+	flog.Debug("handleLoginRsp msg=%v", *msg)
 }
 
 func handleLoginReq(addr string, msg *csMsg.Msg, cm *connsManager) {
-	fmt.Printf("handleLoginReq msg=%v\n", *msg)
+	flog.Debug("handleLoginReq msg=%v", *msg)
 
 	rsp, err := rpcClient.getCli().Login(context.Background(), &rpcPb.LoginReq{Account: msg.GetLoginReq().Account, Password: msg.GetLoginReq().Password})
 	if err != nil {
-		fmt.Printf("[gatewaySvr] Login account:%v, password:%v err:%v\n", msg.GetLoginReq().Account, msg.GetLoginReq().Password, err)
+		flog.Error("[gatewaySvr] Login account:%v, password:%v err:%v", msg.GetLoginReq().Account, msg.GetLoginReq().Password, err)
 
 		rData := new(rspData)
 		rData.setData(addr, addr,
@@ -59,15 +57,15 @@ func handleLoginReq(addr string, msg *csMsg.Msg, cm *connsManager) {
 }
 
 func handleRegisterRsp(addr string, msg *csMsg.Msg, cm *connsManager) {
-	fmt.Printf("handleRegisterRsp msg=%v\n", *msg)
+	flog.Debug("handleRegisterRsp msg=%v", *msg)
 }
 
 func handleRegisterReq(addr string, msg *csMsg.Msg, cm *connsManager) {
-	fmt.Printf("handleRegisterReq addr=%v, msg=%v\n", addr, msg)
+	flog.Debug("handleRegisterReq addr=%v, msg=%v", addr, msg)
 
 	rsp, err := rpcClient.getCli().Register(context.Background(), &rpcPb.RegisterReq{Account: msg.GetRegisterReq().Account, Password: msg.GetRegisterReq().Password})
 	if err != nil {
-		fmt.Printf("[gatewaySvr] Register account:%v, password:%v err:%v\n", msg.GetRegisterReq().Account, msg.GetRegisterReq().Password, err)
+		flog.Error("[gatewaySvr] Register account:%v, password:%v err:%v", msg.GetRegisterReq().Account, msg.GetRegisterReq().Password, err)
 
 		rData := new(rspData)
 		rData.setData(addr, addr,

@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	rpcPb "fchat/protos2Go/rpc"
-	"fmt"
-	"log"
 	"time"
 
 	"google.golang.org/grpc"
@@ -29,7 +27,7 @@ func (rc *rpcClientProxy) init() {
 
 	conn, err := grpc.Dial(rc.serverAddr, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("[gatewaySvr] grpc Dial %s err: %v", rc.serverAddr, err)
+		flog.Fatal("[gatewaySvr] grpc Dial %s err: %v", rc.serverAddr, err)
 	}
 	//defer conn.Close()
 	rc.accountClient = rpcPb.NewAccountClient(conn)
@@ -43,7 +41,7 @@ func (rc *rpcClientProxy) heartbeat() {
 		if err != nil {
 			rc.reDial()
 		} else {
-			fmt.Printf("[gatewaySvr] heartbeat normal. serverAddr:%s\n", rc.serverAddr)
+			flog.Debug("[gatewaySvr] heartbeat normal. serverAddr:%s", rc.serverAddr)
 		}
 	}
 }
@@ -53,11 +51,10 @@ func (rc *rpcClientProxy) getCli() rpcPb.AccountClient {
 }
 
 func (rc *rpcClientProxy) reDial() {
-	fmt.Printf("[gatewaySvr] grpc reDial %s\n", rc.serverAddr)
+	flog.Debug("[gatewaySvr] grpc reDial %s", rc.serverAddr)
 	conn, err := grpc.Dial(rc.serverAddr, grpc.WithInsecure())
 	if err != nil {
-		//log.Fatalf("[gatewaySvr] grpc reDial %s err: %v", rc.serverAddr, err)
-		fmt.Printf("[gatewaySvr] grpc reDial %s err: %v\n", rc.serverAddr, err)
+		flog.Error("[gatewaySvr] grpc reDial %s err: %v", rc.serverAddr, err)
 		return
 	}
 	//defer conn.Close()

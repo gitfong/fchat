@@ -3,51 +3,53 @@ package main
 import (
 	_ "bufio"
 	"fmt"
-	"log"
 	"net"
-	"os"
 	"runtime"
 	_ "strings"
 
 	csMsg "fchat/protos2Go"
 	"github.com/golang/protobuf/proto"
+
+	"fLog"
 )
+
+var flog = fLog.New()
 
 func init() {
 	numCpu := runtime.NumCPU()
 	runtime.GOMAXPROCS(numCpu)
-
 }
 
 func main() {
-	fmt.Println("Launching server")
+	flog.Info("launching server")
 
 	listenAdd := ":9090"
 	tcpAddr, err := net.ResolveTCPAddr("tcp", listenAdd)
 	if err != nil {
-		fmt.Println("resolveTCPAddr err:", err)
-		os.Exit(0)
+		flog.Fatal("ResolveTCPAddr err:%v", listenAdd)
 	}
 
 	ln, err := net.ListenTCP("tcp", tcpAddr)
 	if err != nil {
-		log.Fatal("listen on addr:", tcpAddr)
+		flog.Fatal("listen on addr:", tcpAddr)
 	}
 
 	connMng := new(connsManager)
 	connMng.init()
 	go connMng.run()
 
+	fmt.Println("server start finished")
+
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
-			fmt.Println("accept err:", err)
+			flog.Error("accept err:", err)
 			continue
 		}
 
 		go handldConn(conn, connMng)
 
-		fmt.Println("goroutine count:", runtime.NumGoroutine())
+		flog.Debug("goroutine count:%d", runtime.NumGoroutine())
 	}
 
 }
@@ -56,16 +58,16 @@ func handldConn(c net.Conn, connMng *connsManager) {
 	defer c.Close()
 
 	addr := c.RemoteAddr().String()
-	fmt.Printf("new conn: '%s'\n", addr)
+	flog.Info("new conn from : '%s'", addr)
 
 	connMng.addConn(c)
-	
+
 	buf := make([]byte, 4096, 4096)
 
 	for {
 		cnt, err := c.Read(buf)
 		if err != nil {
-			fmt.Println("read err:", err)
+			flog.Error("read err:%v", err)
 
 			connMng.chDel <- addr
 			return
@@ -75,17 +77,17 @@ func handldConn(c net.Conn, connMng *connsManager) {
 		pData := buf[:cnt]
 		err = proto.Unmarshal(pData, msg)
 		if err != nil {
-			fmt.Println("proto.Unmarshal err:", err)
+			flog.Error("proto.Unmarshal err:%v", err)
 			continue
 		}
 
-		fmt.Printf("from '%s',cnt:%d,%v\n", addr, cnt, msg)
+		flog.Debug("from '%s',msgLen:%d,%v", addr, cnt, msg)
 
 		if MsgHandleFunc[msg.ID] != nil {
 			//go MsgHandleFunc[msg.ID](addr, msg, connMng)
 			MsgHandleFunc[msg.ID](addr, msg, connMng)
 		} else {
-			fmt.Printf("MsgHandleFunc[%d] is nil\n", msg.ID)
+			flog.Warn("MsgHandleFunc[%d] is nil", msg.ID)
 		}
 
 	}
@@ -113,7 +115,7 @@ func (cm *connsManager) init() {
 	cm.chNotify = make(chan *rspData, 100)
 }
 
-func (cm *connsManager) addConn(c net.Conn){
+func (cm *connsManager) addConn(c net.Conn) {
 	cInfo := &connInfo{
 		conn: c,
 		addr: c.RemoteAddr().String(),
@@ -127,32 +129,31 @@ func (cm *connsManager) run() {
 		select {
 		case info := <-cm.chAdd:
 			cm.conns[info.addr] = info
-			fmt.Printf("add '%v' to cm.\n", info.addr)
+			flog.Debug("add '%v' to cm.", info.addr)
 		case str := <-cm.chDel:
 			delete(cm.conns, str)
-			fmt.Printf("delete '%v' from cm.\n", str)
+			flog.Debug("delete '%v' from cm.", str)
 		case rsp := <-cm.chRsp:
 			pData, err := proto.Marshal(rsp.data)
 			if err != nil {
-				fmt.Println("on connsManager run. mashal err:", err)
+				flog.Error("on connsManager run. mashal err:%v", err)
 				continue
 			}
 
 			if info, ok := cm.conns[rsp.targetAddr]; ok {
 				info.conn.Write(pData)
-				fmt.Printf("rsp data to '%v'\n", rsp.targetAddr)
-
-			} 
+				flog.Debug("rsp data to '%v'", rsp.targetAddr)
+			}
 		case notifyData := <-cm.chNotify:
 			pData, err := proto.Marshal(notifyData.data)
 			if err != nil {
-				fmt.Println("on connsManager run. mashal err:", err)
+				flog.Error("on connsManager run. mashal err:%v", err)
 				continue
 			}
 
 			for key, val := range cm.conns {
 				val.conn.Write(pData)
-				fmt.Println("notify to ", key)
+				flog.Debug("notify to '%v'", key)
 			}
 		}
 	}
