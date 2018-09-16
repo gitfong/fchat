@@ -40,8 +40,6 @@ func (rc *rpcClientProxy) heartbeat() {
 		_, err := rc.getCli().Heartbeat(context.Background(), &rpcPb.HeartbeatReq{})
 		if err != nil {
 			rc.reDial()
-		} else {
-			flog.Debug("[gatewaySvr] heartbeat normal. serverAddr:%s", rc.serverAddr)
 		}
 	}
 }

@@ -6,7 +6,7 @@ import (
 
 	rpcPb "fchat/protos2Go/rpc"
 
-	"fLog"
+	"github.com/gitfong/fLog"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -15,6 +15,9 @@ var flog *fLog.FLogger
 
 func init() {
 	flog = fLog.New()
+	if flog == nil {
+		panic("fLog.New fail")
+	}
 }
 
 const (

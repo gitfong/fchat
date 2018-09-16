@@ -10,7 +10,7 @@ import (
 	csMsg "fchat/protos2Go"
 	"github.com/golang/protobuf/proto"
 
-	"fLog"
+	"github.com/gitfong/fLog"
 )
 
 var flog *fLog.FLogger
@@ -19,9 +19,17 @@ func init() {
 	numCpu := runtime.NumCPU()
 	runtime.GOMAXPROCS(numCpu)
 	flog = fLog.New()
+	if flog == nil {
+		panic("fLog.New fail")
+	}
 }
 
 func main() {
+	if flog == nil{
+		fmt.Println("flog is nil")
+	}else{
+		fmt.Println("flog is not nil")
+	}
 	flog.Info("launching server")
 
 	listenAdd := ":9090"
