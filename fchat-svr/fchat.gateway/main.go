@@ -25,11 +25,6 @@ func init() {
 }
 
 func main() {
-	if flog == nil{
-		fmt.Println("flog is nil")
-	}else{
-		fmt.Println("flog is not nil")
-	}
 	flog.Info("launching server")
 
 	listenAdd := ":9090"
