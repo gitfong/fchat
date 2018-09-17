@@ -47,7 +47,7 @@ func (s *accountServer) Login(ctx context.Context, in *rpcPb.LoginReq) (*rpcPb.L
 
 	//check account and password
 	var Uid int32 = 0
-	err := dbw.Db.QueryRow(`SELECT id FROM accounts WHERE account=? AND passWord=?`).Scan(&Uid)
+	err := dbw.Db.QueryRow(`SELECT id FROM accounts WHERE account=? AND passWord=?`, in.Account, in.Password).Scan(&Uid)
 	if err != nil {
 		flog.Error("Login account:%s,password:%s,err:%v", in.Account, in.Password, err)
 		return &rpcPb.LoginRsp{RetCode: 1, Uid: 0, Desc: "login fail."}, err
