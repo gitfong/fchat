@@ -1,17 +1,25 @@
 package main
 
 import (
+	"database/sql"
+	"encoding/json"
+	"io/ioutil"
 	"net"
 	_ "time"
 
 	rpcPb "fchat/protos2Go/rpc"
 
 	"github.com/gitfong/fLog"
-	"golang.org/x/net/context"
+	_ "github.com/go-sql-driver/mysql"
 	"google.golang.org/grpc"
 )
 
+const (
+	accountSvrAddr = ":9091"
+)
+
 var flog *fLog.FLogger
+var dbw = new(dbWorker)
 
 func init() {
 	flog = fLog.New()
@@ -20,28 +28,11 @@ func init() {
 	}
 }
 
-const (
-	accountSvrAddr = ":9091"
-)
-
-type accountServer struct{}
-
-func (s *accountServer) Heartbeat(ctx context.Context, in *rpcPb.HeartbeatReq) (*rpcPb.HeartbeatRsp, error) {
-	return &rpcPb.HeartbeatRsp{}, nil
-}
-
-func (s *accountServer) Register(ctx context.Context, in *rpcPb.RegisterReq) (*rpcPb.RegisterRsp, error) {
-	//time.Sleep(time.Second * 10)	//客户端会阻塞等待
-	flog.Debug("[accountSvr] on Register %s,%s", in.Account, in.Password)
-	return &rpcPb.RegisterRsp{RetCode: 0, Uid: 1, Desc: "register succeed!"}, nil
-}
-
-func (s *accountServer) Login(ctx context.Context, in *rpcPb.LoginReq) (*rpcPb.LoginRsp, error) {
-	flog.Debug("[accountSvr] on Login %s,%s", in.Account, in.Password)
-	return &rpcPb.LoginRsp{RetCode: 0, Uid: 1, Desc: "login succeed!"}, nil
-}
-
 func main() {
+	//init dbworker
+	dbw.init()
+	defer dbw.Db.Close()
+
 	lis, err := net.Listen("tcp", accountSvrAddr)
 	if err != nil {
 		flog.Fatal("failed to listen addr:%s, err:%v", accountSvrAddr, err)
@@ -50,4 +41,26 @@ func main() {
 	rpcServer := grpc.NewServer()
 	rpcPb.RegisterAccountServer(rpcServer, &accountServer{})
 	rpcServer.Serve(lis)
+}
+
+type dbWorker struct {
+	DataSrcName string `json:"DataSrcName"`
+	Db          *sql.DB
+}
+
+func (w *dbWorker) init() {
+	data, err := ioutil.ReadFile("dbCfgAccount.json")
+	if err != nil {
+		flog.Fatal("read dbCfg.json err:%v", err)
+	}
+
+	err = json.Unmarshal(data, w)
+	if err != nil {
+		flog.Fatal("json.Unmarshal err:%v", err)
+	}
+
+	w.Db, err = sql.Open("mysql", w.DataSrcName)
+	if err != nil {
+		flog.Fatal("sql.Open err:", err)
+	}
 }
