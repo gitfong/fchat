@@ -8,6 +8,6 @@ import (
 
 type statusSvr struct{}
 
-func (s *statusSvr) SignIn(ctx context.Context, in *rpcPb.HeartbeatReq) (*rpcPb.HeartbeatRsp, error) {
-	return &rpcPb.HeartbeatRsp{}, nil
+func (s *statusSvr) SignIn(ctx context.Context, in *rpcPb.SignInReq) (*rpcPb.SignInRsp, error) {
+	return &rpcPb.SignInRsp{}, nil
 }
