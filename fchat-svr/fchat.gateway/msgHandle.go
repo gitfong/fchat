@@ -36,7 +36,7 @@ func handleLoginReq(addr string, msg *csMsg.Msg, cm *connsManager) {
 			&csMsg.Msg{
 				ID: csMsg.MsgID_loginRsp,
 				LoginRsp: &csMsg.MsgLoginRsp{
-					RetCode: 1,
+					RetCode: 100,
 					Desc:    "Network exception, please try again later.",
 				},
 			},
@@ -72,7 +72,7 @@ func handleRegisterReq(addr string, msg *csMsg.Msg, cm *connsManager) {
 			&csMsg.Msg{
 				ID: csMsg.MsgID_registerRsp,
 				RegisterRsp: &csMsg.MsgRegisterRsp{
-					RetCode: 1,
+					RetCode: 100,
 					Desc:    "Network exception, please try again later.",
 				},
 			},
