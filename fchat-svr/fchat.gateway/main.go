@@ -8,12 +8,14 @@ import (
 	_ "strings"
 
 	csMsg "fchat/protos2Go"
+
 	"github.com/golang/protobuf/proto"
 
 	"github.com/gitfong/fLog"
 )
 
 var flog *fLog.FLogger
+var connMng = new(connsManager)
 
 func init() {
 	numCpu := runtime.NumCPU()
@@ -38,7 +40,6 @@ func main() {
 		flog.Fatal("listen on addr:", tcpAddr)
 	}
 
-	connMng := new(connsManager)
 	connMng.init()
 	go connMng.run()
 
@@ -104,19 +105,29 @@ type connInfo struct {
 }
 
 type connsManager struct {
-	conns    map[string]*connInfo
-	chAdd    chan *connInfo
-	chDel    chan string
-	chRsp    chan *rspData
-	chNotify chan *rspData
+	conns       map[string]*connInfo
+	chAdd       chan *connInfo
+	chUpdateUID chan *connInfo
+	chDel       chan string
+	chRsp       chan *rspData
+	chNotify    chan *rspData
 }
 
 func (cm *connsManager) init() {
 	cm.conns = make(map[string]*connInfo)
 	cm.chAdd = make(chan *connInfo)
+	cm.chUpdateUID = make(chan *connInfo)
 	cm.chDel = make(chan string)
 	cm.chRsp = make(chan *rspData)
 	cm.chNotify = make(chan *rspData, 100)
+}
+
+func (cm *connsManager) getUIDByAddr(addr string) int32 {
+	return cm.conns[addr].uid
+}
+
+func (cm *connsManager) setUIDByAddr(addr string, uid int32) {
+	cm.conns[addr].uid = uid
 }
 
 func (cm *connsManager) addConn(c net.Conn) {
@@ -159,6 +170,9 @@ func (cm *connsManager) run() {
 				val.conn.Write(pData)
 				flog.Debug("notify to '%v'", key)
 			}
+		case uid := <-cm.chUpdateUID:
+			flog.Debug("update uid:%d", uid)
+			//todo
 		}
 	}
 }

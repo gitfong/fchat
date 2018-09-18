@@ -18,6 +18,23 @@ var MsgHandleFunc = map[csMsg.MsgID]func(string, *csMsg.Msg, *connsManager){
 
 func handleSignInReq(addr string, msg *csMsg.Msg, cm *connsManager) {
 	flog.Debug("handleSignInReq msg=%v", msg)
+
+	rsp, err := rpcClient.getStatusCli().SignIn(context.Background(), &rpcPb.SignInReq{Uid: connMng.getUIDByAddr(addr)})
+	if err != nil {
+		flog.Error("[gatewaySvr] signin uid:%d err:%v", connMng.getUIDByAddr(addr), err)
+		return
+	}
+
+	rspMsg := new(csMsg.Msg)
+	rspMsg.ID = csMsg.MsgID_signInRsp
+	rspMsg.SignInRsp = new(csMsg.MsgSignInRsp)
+	rspMsg.GetSignInRsp().RetCode = rsp.RetCode
+	rspMsg.GetSignInRsp().Desc = rsp.Desc
+	rspMsg.GetSignInRsp().SignInCount = 0
+
+	rData := new(rspData)
+	rData.setData(addr, addr, rspMsg)
+	cm.chRsp <- rData
 }
 
 func handleLoginRsp(addr string, msg *csMsg.Msg, cm *connsManager) {
@@ -27,7 +44,7 @@ func handleLoginRsp(addr string, msg *csMsg.Msg, cm *connsManager) {
 func handleLoginReq(addr string, msg *csMsg.Msg, cm *connsManager) {
 	flog.Debug("handleLoginReq msg=%v", *msg)
 
-	rsp, err := rpcClient.getCli().Login(context.Background(), &rpcPb.LoginReq{Account: msg.GetLoginReq().Account, Password: msg.GetLoginReq().Password})
+	rsp, err := rpcClient.getAccountCli().Login(context.Background(), &rpcPb.LoginReq{Account: msg.GetLoginReq().Account, Password: msg.GetLoginReq().Password})
 	if err != nil {
 		flog.Error("[gatewaySvr] Login account:%v, password:%v err:%v", msg.GetLoginReq().Account, msg.GetLoginReq().Password, err)
 
@@ -63,7 +80,7 @@ func handleRegisterRsp(addr string, msg *csMsg.Msg, cm *connsManager) {
 func handleRegisterReq(addr string, msg *csMsg.Msg, cm *connsManager) {
 	flog.Debug("handleRegisterReq addr=%v, msg=%v", addr, msg)
 
-	rsp, err := rpcClient.getCli().Register(context.Background(), &rpcPb.RegisterReq{Account: msg.GetRegisterReq().Account, Password: msg.GetRegisterReq().Password})
+	rsp, err := rpcClient.getAccountCli().Register(context.Background(), &rpcPb.RegisterReq{Account: msg.GetRegisterReq().Account, Password: msg.GetRegisterReq().Password})
 	if err != nil {
 		flog.Error("[gatewaySvr] Register account:%v, password:%v err:%v", msg.GetRegisterReq().Account, msg.GetRegisterReq().Password, err)
 
