@@ -3,9 +3,13 @@ syntax = "proto3";
 package rpcProtos;
 
 service Status {
+	rpc Heartbeat(Heartbeat2StatusReq) returns (Heartbeat2StatusRsp){}
 	rpc SignIn(SignInReq) returns (SignInRsp){}
 	rpc UpdateStatus(UpdateStatusReq) returns (UpdateStatusRsp){}
 }
+
+message Heartbeat2StatusReq{}
+message Heartbeat2StatusRsp{}
 
 message SignInReq{
 	int32 uid=1;
