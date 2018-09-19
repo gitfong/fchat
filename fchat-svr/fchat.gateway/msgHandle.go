@@ -5,6 +5,8 @@ import (
 	csMsg "fchat/protos2Go"
 	rpcPb "fchat/protos2Go/rpc"
 	_ "time"
+
+	"github.com/name5566/leaf/log"
 )
 
 //以下函数全是在gatewaySvr运行的，所以尽量不要有太复杂的逻辑，把复杂的逻辑都传给其他服去处理
@@ -32,6 +34,8 @@ func handleSignInReq(addr string, msg *csMsg.Msg, cm *connsManager) {
 	rspMsg.GetSignInRsp().Retcode = rsp.RetCode
 	rspMsg.GetSignInRsp().Desc = rsp.Desc
 	rspMsg.GetSignInRsp().SignInCount = rsp.SignInCount
+
+	log.Debug("handleSignIn rspMsg:%v", rspMsg)
 
 	rData := new(rspData)
 	rData.setData(addr, addr, rspMsg)
