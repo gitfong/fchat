@@ -19,18 +19,19 @@ var MsgHandleFunc = map[csMsg.MsgID]func(string, *csMsg.Msg, *connsManager){
 func handleSignInReq(addr string, msg *csMsg.Msg, cm *connsManager) {
 	flog.Debug("handleSignInReq msg=%v", msg)
 
-	rsp, err := rpcClient.getStatusCli().SignIn(context.Background(), &rpcPb.SignInReq{Uid: connMng.getUIDByAddr(addr)})
+	Uid := cm.getUIDByAddr(addr)
+	rsp, err := rpcClient.getStatusCli().SignIn(context.Background(), &rpcPb.SignInReq{Uid: Uid})
 	if err != nil {
-		flog.Error("[gatewaySvr] signin uid:%d err:%v", connMng.getUIDByAddr(addr), err)
+		flog.Error("[gatewaySvr] signin uid:%d err:%v", Uid, err)
 		return
 	}
 
 	rspMsg := new(csMsg.Msg)
 	rspMsg.ID = csMsg.MsgID_signInRsp
 	rspMsg.SignInRsp = new(csMsg.MsgSignInRsp)
-	rspMsg.GetSignInRsp().RetCode = rsp.RetCode
+	rspMsg.GetSignInRsp().Retcode = rsp.RetCode
 	rspMsg.GetSignInRsp().Desc = rsp.Desc
-	rspMsg.GetSignInRsp().SignInCount = 0
+	rspMsg.GetSignInRsp().SignInCount = rsp.SignInCount
 
 	rData := new(rspData)
 	rData.setData(addr, addr, rspMsg)
@@ -67,6 +68,11 @@ func handleLoginReq(addr string, msg *csMsg.Msg, cm *connsManager) {
 	rspMsg.LoginRsp = new(csMsg.MsgLoginRsp)
 	rspMsg.GetLoginRsp().RetCode = rsp.RetCode
 	rspMsg.GetLoginRsp().Desc = rsp.Desc
+	rspMsg.GetLoginRsp().Uid = rsp.Uid
+
+	if 0 == rsp.RetCode {
+		cm.setUIDByAddr(addr, rsp.Uid)
+	}
 
 	rData := new(rspData)
 	rData.setData(addr, addr, rspMsg)

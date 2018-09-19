@@ -44,6 +44,7 @@ message MsgLoginReq{
 message MsgLoginRsp{
 	int32	retCode = 1;
 	string	desc = 2;
+	int32 	uid = 3;
 }
 
 message MsgSignInReq{

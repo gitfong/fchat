@@ -15,7 +15,6 @@ import (
 )
 
 var flog *fLog.FLogger
-var connMng = new(connsManager)
 
 func init() {
 	numCpu := runtime.NumCPU()
@@ -40,6 +39,7 @@ func main() {
 		flog.Fatal("listen on addr:", tcpAddr)
 	}
 
+	connMng := new(connsManager)
 	connMng.init()
 	go connMng.run()
 

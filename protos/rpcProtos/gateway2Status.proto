@@ -17,6 +17,7 @@ message SignInReq{
 message SignInRsp{
 	int32 retCode=1;
 	string desc=2;
+	int32	signInCount = 3;
 }
 
 message UpdateStatusReq{
