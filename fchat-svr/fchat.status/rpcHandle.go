@@ -14,7 +14,7 @@ func (s *statusSvr) Heartbeat(ctx context.Context, in *rpcPb.Heartbeat2StatusReq
 
 func (s *statusSvr) SignIn(ctx context.Context, in *rpcPb.SignInReq) (*rpcPb.SignInRsp, error) {
 	flog.Debug("signin uid:%d", in.Uid)
-	return &rpcPb.SignInRsp{RetCode: 0, Desc: "签到成功"}, nil
+	return &rpcPb.SignInRsp{RetCode: 0, Desc: "signin succeed"}, nil
 }
 
 func (s *statusSvr) UpdateStatus(ctx context.Context, in *rpcPb.UpdateStatusReq) (*rpcPb.UpdateStatusRsp, error) {
