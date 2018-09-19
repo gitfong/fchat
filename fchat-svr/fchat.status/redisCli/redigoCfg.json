@@ -1,0 +1,6 @@
+{
+    "redisHost":"67.218.142.250",
+    "redisPort" : 6379,
+    "poolSize" : 20,
+    "password" : "xxxx"
+}
