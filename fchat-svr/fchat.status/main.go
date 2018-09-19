@@ -31,6 +31,6 @@ func main() {
 	}
 
 	rpcServer := grpc.NewServer()
-	rpcPb.RegisterAccountServer(rpcServer, &statusSvr{})
+	rpcPb.RegisterStatusServer(rpcServer, &statusSvr{})
 	rpcServer.Serve(lis)
 }
