@@ -26,6 +26,8 @@ func handleSignInReq(addr string, msg *csMsg.Msg, cm *connsManager) {
 		return
 	}
 
+	flog.Debug("handleSignIn retcode:%v,desc:%v,signincount:%v", rsp.RetCode, rsp.Desc, rsp.SignInCount)
+
 	rspMsg := new(csMsg.Msg)
 	rspMsg.ID = csMsg.MsgID_signInRsp
 	rspMsg.SignInRsp = new(csMsg.MsgSignInRsp)
