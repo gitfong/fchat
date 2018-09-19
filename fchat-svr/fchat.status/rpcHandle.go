@@ -27,6 +27,7 @@ func (s *statusSvr) SignIn(ctx context.Context, in *rpcPb.SignInReq) (*rpcPb.Sig
 
 	offsetDay := time.Now().Sub(beginSinginDate).Hours() / 24
 	flog.Debug("offsetDay:%d", offsetDay)
+
 	c := redisCli.Get()
 	isSign, err := redis.Int(c.Do("getbit", getSignInKey(in.Uid), offsetDay))
 	if err != nil {
