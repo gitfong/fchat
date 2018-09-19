@@ -12,6 +12,7 @@ import (
 
 var pool *redigo.Pool
 var flog *fLog.FLogger
+var cfg *redigoCfg
 
 func init() {
 	flog = fLog.New()
@@ -23,7 +24,7 @@ func init() {
 	if err != nil {
 		flog.Fatal("readfile redigoCfg.json err:%v", err)
 	}
-	cfg := &redigoCfg{}
+	cfg = &redigoCfg{}
 	err = json.Unmarshal(data, cfg)
 	if err != nil {
 		flog.Fatal("unmarshal cfg:%v,err:%v", cfg, err)
@@ -39,7 +40,9 @@ func init() {
 }
 
 func Get() redigo.Conn {
-	return pool.Get()
+	c := pool.Get()
+	c.Do("auth", cfg.Password)
+	return c
 }
 
 type redigoCfg struct {
